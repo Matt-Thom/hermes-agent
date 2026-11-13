@@ -309,6 +309,8 @@ Hermes Agent uses numeric Telegram user IDs to control access. Your user ID is *
 
 Save this number; you'll need it for the next step.
 
+A `@username` in `TELEGRAM_ALLOWED_USERS` does not match. The gateway drops the DM and does not reply. The log line is `Blocked unauthorized user <id>`.
+
 ## Step 5: Configure Hermes
 
 ### Option A: Interactive Setup (Recommended)
@@ -325,7 +327,7 @@ Add the following to `~/.hermes/.env`:
 
 ```bash
 TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrSTUvwxYZ
-TELEGRAM_ALLOWED_USERS=123456789    # Comma-separated for multiple users
+TELEGRAM_ALLOWED_USERS=123456789    # Numeric ids only, comma-separated. Not an @username.
 ```
 
 ### Start the Gateway
@@ -480,6 +482,10 @@ TELEGRAM_HOME_CHANNEL_NAME="My Notes"
 
 :::tip
 Group chat IDs are negative numbers (e.g., `-1001234567890`). Your personal DM chat ID is the same as your user ID.
+:::
+
+:::warning
+`TELEGRAM_HOME_CHANNEL` must be that numeric chat id, not an `@username`. The Bot API rejects a username with `Chat not found`, and `hermes send --to telegram` fails the same way when the home channel is a username.
 :::
 
 ### Cron deliveries in topic mode
@@ -1542,7 +1548,9 @@ Numeric YAML keys are automatically normalized to strings.
 | Problem | Solution |
 |---------|----------|
 | Bot not responding at all | Verify `TELEGRAM_BOT_TOKEN` is correct. Check `hermes gateway` logs for errors. |
-| Bot responds with "unauthorized" | Your user ID is not in `TELEGRAM_ALLOWED_USERS`. Double-check with @userinfobot. |
+| Log says `Blocked unauthorized user <id>`, and the bot stays silent | `TELEGRAM_ALLOWED_USERS` must be that numeric id. An `@username` never matches, and the bot does not reply. Restart the gateway after changing the value. The id is in the log line, or from @userinfobot. |
+| Bot responds with "unauthorized" | Your numeric user ID is not in `TELEGRAM_ALLOWED_USERS`. A `@username` never matches. Double-check with @userinfobot. |
+| `hermes send` returns `Chat not found` | `TELEGRAM_HOME_CHANNEL` is not a numeric chat id. A `@username` is rejected. For a DM, use the same numeric user id. |
 | Bot ignores group messages | Privacy mode is likely on. Disable it (Step 3) or make the bot a group admin. **Remember to remove and re-add the bot after changing privacy.** |
 | Voice messages not transcribed | Verify STT is available: install `faster-whisper` for local transcription, or set `GROQ_API_KEY` / `VOICE_TOOLS_OPENAI_KEY` in `~/.hermes/.env`. |
 | Voice replies are files, not bubbles | Install `ffmpeg` (needed for Edge TTS Opus conversion). |

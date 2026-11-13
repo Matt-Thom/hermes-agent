@@ -311,11 +311,11 @@ These are set automatically by the Docker terminal backend when `proxy.enabled: 
 | Variable | Description |
 |----------|-------------|
 | `TELEGRAM_BOT_TOKEN` | Telegram bot token (from @BotFather) |
-| `TELEGRAM_ALLOWED_USERS` | Comma-separated user IDs allowed to use the bot (applies to DMs, groups, and forums) |
+| `TELEGRAM_ALLOWED_USERS` | Comma-separated numeric Telegram user IDs (not `@username`s). Applies to DMs, groups, and forums. A username never matches: the gateway drops the DM and logs `Blocked unauthorized user <id>`. |
 | `TELEGRAM_ALLOW_ALL_USERS` | Allow any Telegram user to trigger the bot (dev only). |
 | `TELEGRAM_GROUP_ALLOWED_USERS` | Comma-separated sender user IDs authorized in groups/forums only (does NOT grant DM access). Chat-ID-shaped values (starting with `-`) are still honored as chat IDs for backward compat with pre-#17686 configs, with a deprecation warning. |
 | `TELEGRAM_GROUP_ALLOWED_CHATS` | Comma-separated group/forum chat IDs; any member is authorized |
-| `TELEGRAM_HOME_CHANNEL` | Default Telegram chat/channel for cron delivery |
+| `TELEGRAM_HOME_CHANNEL` | Numeric chat id for cron delivery. Not an `@username` (the Bot API returns `Chat not found`). A personal DM id is the same as the user id. Group ids are negative. |
 | `TELEGRAM_HOME_CHANNEL_NAME` | Display name for the Telegram home channel |
 | `TELEGRAM_CRON_THREAD_ID` | Forum topic ID to receive cron deliveries; overrides `TELEGRAM_HOME_CHANNEL_THREAD_ID` for cron only. Use in topic mode so replies to cron messages open a new session instead of hitting the system lobby (#24409). |
 | `TELEGRAM_WEBHOOK_URL` | Public HTTPS URL for webhook mode (enables webhook instead of polling) |
